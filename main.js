@@ -18,6 +18,12 @@ const $startgame = document.getElementById("start_game");
 const $pausegame = document.getElementById("pause_game");
 const $gameover = document.getElementById("game_over");
 
+const $touch_left = document.querySelector(".touch.left");
+const $touch_right = document.querySelector(".touch.right");
+const $touch_down = document.querySelector(".touch.down");
+const $touch_up = document.querySelector(".touch.up");
+const $touch_pause = document.querySelector(".touch.pause");
+
 canvas.width = BLOCK_COLUMN * BLOCK_SIZE;
 canvas.height = BLOCK_ROW * BLOCK_SIZE;
 context.scale(BLOCK_SIZE, BLOCK_SIZE);
@@ -52,7 +58,7 @@ let pieza_next = {
 
 let bolsa_piezas = [];
 
-let time_step = 500;
+let time_step = 500; // Velocidad del juego
 let dropCounter = 0;
 let lastTime = 0;
 
@@ -178,6 +184,7 @@ function draw() {
 // Comenzar la partida
 function start_game() {
   game_active = true;
+  puntuacion = 0;
   bolsa_piezas = llenarBolsaPiezas();
   pieza = crearPiezaNueva();
   pieza_next = crearPiezaNueva(bolsa_piezas[bolsa_piezas.length - 1], true);
@@ -342,11 +349,7 @@ function lanzarConfetti(num_confetti) {
     });
 }
 
-// Esperamos que presione algún botón o haga click
-$startgame.addEventListener("click", () => start_game());
-$pausegame.addEventListener("click", () => pause_game());
-$gameover.addEventListener("click", () => start_game());
-$calvus.addEventListener("click", () => lanzarConfetti(5));
+// Esperamos que presione algún botón o haga click en la pantalla
 document.addEventListener("keydown", (event) => {
   switch (event.key) {
     case "ArrowLeft":
@@ -372,12 +375,32 @@ document.addEventListener("keydown", (event) => {
       break;
     case "Enter":
     case " ":
-      pause_game();
+      if (game_active || !$pausegame.hidden) pause_game();
       break;
     default:
       break;
   }
 });
+
+$startgame.addEventListener("click", () => start_game());
+$pausegame.addEventListener("click", () => pause_game());
+$gameover.addEventListener("click", () => start_game());
+$calvus.addEventListener("click", () => lanzarConfetti(5));
+
+$touch_left.addEventListener("click", () =>
+  !comprobarColision(-1, 0) ? x-- : null
+);
+
+$touch_right.addEventListener("click", () =>
+  !comprobarColision(+1, 0) ? x++ : null
+);
+
+$touch_down.addEventListener("click", () =>
+  !comprobarColision(0, +1) ? y++ : solidificarPieza()
+);
+
+$touch_up.addEventListener("click", () => rotarPieza());
+$touch_pause.addEventListener("click", () => pause_game());
 
 // Actualizamos el LOOP del juego
 function loop_game(time = 0) {
