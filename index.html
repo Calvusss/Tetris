@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris en Javascript</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+</head>
+
+<body>
+    <center>
+        <img src="assets/Tetris_logo.png" alt="Tetris Logo" id="tetris_logo">
+        <section id="game">
+            <canvas id="tetris"></canvas>
+            <canvas id="pieza_next"></canvas>
+            <div id="puntuacion"> <b>Puntuación: </b><span id="score">0</span> </div>
+            <img id="start_game" src="assets/start_game.jpg" alt="Start game">
+            <img hidden id="pause_game" src="assets/press_start.png" alt="press start">
+            <img hidden id="game_over" src="assets/game_over.gif" alt="Game Over">
+        </section>
+        <footer><strong> Tetris by <a id="calvus">Calvus</a></strong></footer>
+    </center>
+
+    <img hidden id="bloques" src="assets/Blocks.png" alt="Bloques de tetris">
+</body>
+
+<script src="main.js"></script>
+
+</html>
