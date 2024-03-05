@@ -182,9 +182,10 @@ function draw() {
 }
 
 // Comenzar la partida
-function start_game() {
+function startGame() {
   game_active = true;
   puntuacion = 0;
+  $score.innerHTML = puntuacion;
   bolsa_piezas = llenarBolsaPiezas();
   pieza = crearPiezaNueva();
   pieza_next = crearPiezaNueva(bolsa_piezas[bolsa_piezas.length - 1], true);
@@ -195,7 +196,7 @@ function start_game() {
 }
 
 // Pausar la partida
-function pause_game() {
+function pauseGame() {
   game_active = !game_active;
   loop_game();
   $pausegame.hidden = !$pausegame.hidden;
@@ -375,16 +376,16 @@ document.addEventListener("keydown", (event) => {
       break;
     case "Enter":
     case " ":
-      if (game_active || !$pausegame.hidden) pause_game();
+      if (game_active || !$pausegame.hidden) pauseGame();
       break;
     default:
       break;
   }
 });
 
-$startgame.addEventListener("click", () => start_game());
-$pausegame.addEventListener("click", () => pause_game());
-$gameover.addEventListener("click", () => start_game());
+$startgame.addEventListener("click", () => startGame());
+$pausegame.addEventListener("click", () => pauseGame());
+$gameover.addEventListener("click", () => startGame());
 $calvus.addEventListener("click", () => lanzarConfetti(5));
 
 $touch_left.addEventListener("click", () =>
@@ -400,7 +401,7 @@ $touch_down.addEventListener("click", () =>
 );
 
 $touch_up.addEventListener("click", () => rotarPieza());
-$touch_pause.addEventListener("click", () => pause_game());
+$touch_pause.addEventListener("click", () => pauseGame());
 
 // Actualizamos el LOOP del juego
 function loop_game(time = 0) {
