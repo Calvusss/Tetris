@@ -4,8 +4,10 @@ let y = 0;
 
 let puntuacion = 0;
 let game_active = false;
+let dy = 0;
 
 let pieza = pieza_vacia;
+let pieza_sombra = pieza_vacia;
 let pieza_next = pieza_vacia;
 let bolsa_piezas = [];
 
@@ -82,6 +84,20 @@ function draw() {
       pintarBoard(col, board_x, board_y, context_next);
     })
   );
+
+  if (game_active) {
+    dy = 0;
+    while (!comprobarColision(0, dy)) dy++;
+    pieza_sombra = pieza;
+    dy--;
+    // Pintamos la sombra de la pieza en movimiento
+    pieza_sombra.forma?.forEach((row, pieza_y) =>
+      row.forEach((value, pieza_x) => {
+        if (value != 0)
+          pintarBoard(value, pieza_x + x, pieza_y + y + dy, context, true);
+      })
+    );
+  }
 
   // Pintamos la pieza en movimiento
   pieza.forma?.forEach((row, pieza_y) =>
@@ -160,6 +176,12 @@ function rotarPieza() {
   pieza.height = pieza.forma.length;
 }
 
+// Lleva la pieza al fondo y la solidifica
+function llevarAlFondo() {
+  while (!comprobarColision(0, +1)) y++;
+  solidificarPieza();
+}
+
 // Solidificamos la imagen y comprobamos el estado del juego
 function solidificarPieza(letra) {
   // Comprobamos si el juego se ha finalizado
@@ -210,7 +232,7 @@ function pintarBloque(color, pieza_x, pieza_y, ctx) {
 }
 
 // Pintamos el tablero
-function pintarBoard(key, board_x, board_y, ctx) {
+function pintarBoard(key, board_x, board_y, ctx, sombra) {
   let color = 0;
   switch (key) {
     case 0: // Black
@@ -254,7 +276,7 @@ function pintarBoard(key, board_x, board_y, ctx) {
   ctx.fillRect(board_x, board_y, 1, 1);
 
   // Pintamos los bloques
-  if (color >= 0) pintarBloque(color, board_x, board_y, ctx);
+  if (color >= 0 && !sombra) pintarBloque(color, board_x, board_y, ctx);
 }
 
 // Caida de la pieza
@@ -306,8 +328,10 @@ document.addEventListener("keydown", (event) => {
       if (!comprobarColision(0, +1)) y++;
       else solidificarPieza();
       break;
-    case "Enter":
     case " ":
+      llevarAlFondo();
+      break;
+    case "Enter":
       if (game_active || !$pausegame.hidden) pauseGame();
       break;
     default:
@@ -320,20 +344,21 @@ $pausegame.addEventListener("click", () => pauseGame());
 $gameover.addEventListener("click", () => startGame());
 $calvus.addEventListener("click", () => lanzarConfetti(5));
 
-$touch_left.addEventListener("click", () =>
+$key_left.addEventListener("click", () =>
   !comprobarColision(-1, 0) ? x-- : null
 );
 
-$touch_right.addEventListener("click", () =>
+$key_right.addEventListener("click", () =>
   !comprobarColision(+1, 0) ? x++ : null
 );
 
-$touch_down.addEventListener("click", () =>
+$key_down.addEventListener("click", () =>
   !comprobarColision(0, +1) ? y++ : solidificarPieza()
 );
 
-$touch_up.addEventListener("click", () => rotarPieza());
-$touch_pause.addEventListener("click", () => pauseGame());
+$key_fast_drop.addEventListener("click", () => llevarAlFondo());
+$key_up.addEventListener("click", () => rotarPieza());
+$key_pause.addEventListener("click", () => pauseGame());
 
 // Actualizamos el LOOP del juego
 function loop_game(time = 0) {
