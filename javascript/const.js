@@ -15,11 +15,12 @@ const $startgame = document.getElementById("start_game");
 const $pausegame = document.getElementById("pause_game");
 const $gameover = document.getElementById("game_over");
 
-const $touch_left = document.querySelector(".touch.left");
-const $touch_right = document.querySelector(".touch.right");
-const $touch_down = document.querySelector(".touch.down");
-const $touch_up = document.querySelector(".touch.up");
-const $touch_pause = document.querySelector(".touch.pause");
+const $key_left = document.querySelector(".key.left");
+const $key_right = document.querySelector(".key.right");
+const $key_up = document.querySelector(".key.up");
+const $key_down = document.querySelector(".key.down");
+const $key_fast_drop = document.querySelector(".key.fast_drop");
+const $key_pause = document.querySelector(".key.pause");
 
 // Configuración de los canvas
 const canvas = document.getElementById("tetris");
