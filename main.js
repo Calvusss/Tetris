@@ -1,37 +1,3 @@
-/* CONSTANTES DEL JUEGO */
-const canvas = document.getElementById("tetris");
-const context = canvas.getContext("2d");
-
-const BLOCK_SIZE = 18;
-const BLOCK_COLUMN = 14;
-const BLOCK_ROW = 30;
-
-const canvas_next = document.getElementById("pieza_next");
-const context_next = canvas_next.getContext("2d");
-const BLOCK_NEXT_SIZE = 5;
-
-const $bloques = document.querySelector("#bloques");
-const $score = document.getElementById("score");
-const $calvus = document.getElementById("calvus");
-
-const $startgame = document.getElementById("start_game");
-const $pausegame = document.getElementById("pause_game");
-const $gameover = document.getElementById("game_over");
-
-const $touch_left = document.querySelector(".touch.left");
-const $touch_right = document.querySelector(".touch.right");
-const $touch_down = document.querySelector(".touch.down");
-const $touch_up = document.querySelector(".touch.up");
-const $touch_pause = document.querySelector(".touch.pause");
-
-canvas.width = BLOCK_COLUMN * BLOCK_SIZE;
-canvas.height = BLOCK_ROW * BLOCK_SIZE;
-context.scale(BLOCK_SIZE, BLOCK_SIZE);
-
-canvas_next.width = BLOCK_NEXT_SIZE * BLOCK_SIZE;
-canvas_next.height = BLOCK_NEXT_SIZE * BLOCK_SIZE;
-context_next.scale(BLOCK_SIZE, BLOCK_SIZE);
-
 /* VARIABLES DEL JUEGO */
 let x = 0;
 let y = 0;
@@ -39,62 +5,19 @@ let y = 0;
 let puntuacion = 0;
 let game_active = false;
 
-let x_prev = 0;
-let y_prev = 0;
-
-let pieza = {
-  posicion: { x: null, y: null },
-  forma: null,
-  width: null,
-  height: null,
-};
-
-let pieza_next = {
-  posicion: { x: null, y: null },
-  forma: null,
-  width: null,
-  height: null,
-};
-
+let pieza = pieza_vacia;
+let pieza_next = pieza_vacia;
 let bolsa_piezas = [];
-
-let time_step = 500; // Velocidad del juego
-let dropCounter = 0;
-let lastTime = 0;
 
 let board = crearBoard(BLOCK_ROW, BLOCK_COLUMN);
 let board_prev = crearBoard(BLOCK_NEXT_SIZE, BLOCK_NEXT_SIZE);
 
-// Diferentes piezas posibles
-const FORMA_PIEZAS = {
-  J: [
-    [0, "J"],
-    [0, "J"],
-    ["J", "J"],
-  ],
-  T: [
-    ["T", "T", "T"],
-    [0, "T", 0],
-  ],
-  Z: [
-    ["Z", "Z", 0],
-    [0, "Z", "Z"],
-  ],
-  S: [
-    [0, "S", "S"],
-    ["S", "S", 0],
-  ],
-  O: [
-    ["O", "O"],
-    ["O", "O"],
-  ],
-  I: [["I", "I", "I", "I"]],
-  L: [
-    ["L", 0],
-    ["L", 0],
-    ["L", "L"],
-  ],
-};
+// Velocidad del juego
+let time_step = 500 - puntuacion;
+let dropCounter = 0;
+let lastTime = 0;
+
+/* FUNCIONES DEL JUEGO */
 
 // Creamos el tablero
 function crearBoard(width, height) {
@@ -215,6 +138,7 @@ function comprobarColision(dx, dy) {
 function rotarPieza() {
   let forma_nueva = [];
   let forma_original = pieza.forma;
+  let dx = 0;
 
   for (let i = 0; i < pieza.width; i++) {
     let row_new = [];
@@ -226,7 +150,11 @@ function rotarPieza() {
 
   pieza.forma = forma_nueva;
 
-  if (comprobarColision(0, 0)) pieza.forma = forma_original;
+  dx = forma_nueva[0].length - forma_original[0].length;
+
+  if (comprobarColision(0, 0))
+    if (!comprobarColision(-dx, 0)) x -= dx;
+    else pieza.forma = forma_original;
 
   pieza.width = pieza.forma[0].length;
   pieza.height = pieza.forma.length;
@@ -264,17 +192,21 @@ function solidificarPieza(letra) {
 
 // Pintamos un bloque del juego
 function pintarBloque(color, pieza_x, pieza_y, ctx) {
-  ctx.drawImage(
-    $bloques,
-    color * BLOCK_SIZE,
-    0,
-    BLOCK_SIZE,
-    BLOCK_SIZE,
-    pieza_x,
-    pieza_y,
-    1,
-    1
-  );
+  try {
+    ctx.drawImage(
+      $bloques,
+      color * BLOCK_SPRITE_SIZE,
+      0,
+      BLOCK_SPRITE_SIZE,
+      BLOCK_SPRITE_SIZE,
+      pieza_x,
+      pieza_y,
+      1,
+      1
+    );
+  } catch (error) {
+    //console.error(error.message);
+  }
 }
 
 // Pintamos el tablero
